@@ -8,6 +8,8 @@ from multiprocessing import Process
 book_name = ""
 author = ""
 describ = ""
+book_type = ""
+book_state = ""
 
 
 def get_one_page(url):
@@ -61,12 +63,18 @@ def main(bookid):
     c1 = re.findall("""<a class="downButton" href='(.*?)'""", html, re.S)
     global describ
     describ = re.findall("<p>(.*)</p>", html, re.S)[0]
+    global book_type
+    book_type = re.findall('<a href="/soft/sort../">(.*?)</a>',html,re.S)[0]
+    global book_state
+    book_state = re.findall('<li class="small">连载状态：(.*?)</li>',html,re.S)[0]
     url = "https://www.qisuu.la/" + c1[0]
     html = get_one_page(url)
     list01 = get_url(html, url)
     f = open("%s.txt" % book_name, "a")
     f.write("书名:" + book_name + "\n\n")
     f.write("作者:" + author + "\n\n")
+    f.write("类型:" + book_type + "\n\n")
+    f.write("状态:" + book_state + "\n\n")
     f.write("简介:" + describ + "\n\n")
     f.close()
     for i in list01:
@@ -75,12 +83,18 @@ def main(bookid):
 
 
 def process():
-    p = Process(target=main, args=("9118",))
+    p = Process(target=main, args=("2237",))
+    p.daemon = True
+    p.start()
+
+def process1():
+    p = Process(target=main, args=("36288",))
     p.daemon = True
     p.start()
 
 
 if __name__ == '__main__':
+    process1()
     process()
-    book_id = "15862"
+    book_id = "7391"
     main(book_id)
